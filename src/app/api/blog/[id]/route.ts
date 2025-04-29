@@ -1,0 +1,101 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { verifyJWT } from "@/lib/jwt";
+import { z } from "zod";
+import { verifyAccessToken } from "@/lib/auth";
+
+const postSchema = z.object({
+  title: z.string().min(1),
+  content: z.string().min(1),
+});
+
+export async function GET(_: Request, { params }: { params: { id: string } }) {
+  const post = await prisma.post.findUnique({
+    where: { id: params.id },
+  });
+
+  if (!post) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  return NextResponse.json(post);
+}
+
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  const user = token && verifyAccessToken(token);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+
+  let userId;
+  try {
+    const payload = await verifyJWT(token);
+    if (typeof payload !== "string" && "userId" in payload) {
+      userId = payload.userId;
+    } else {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+  } catch {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
+
+  const post = await prisma.post.findUnique({ where: { id: params.id } });
+
+  if (!post || post.authorId !== userId) {
+    return NextResponse.json(
+      { error: "Unauthorized or not found" },
+      { status: 403 }
+    );
+  }
+
+  const body = await req.json();
+  const parsed = postSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+  }
+
+  const updated = await prisma.post.update({
+    where: { id: params.id },
+    data: parsed.data,
+  });
+
+  return NextResponse.json(updated);
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+
+  const user = token && verifyAccessToken(token);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+
+  let userId;
+  try {
+    const payload = await verifyJWT(token);
+    if (typeof payload !== "string" && "userId" in payload) {
+      userId = payload.userId;
+    } else {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+  } catch {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
+
+  const post = await prisma.post.findUnique({ where: { id: params.id } });
+
+  if (!post || post.authorId !== userId) {
+    return NextResponse.json(
+      { error: "Unauthorized or not found" },
+      { status: 403 }
+    );
+  }
+
+  await prisma.post.delete({ where: { id: params.id } });
+
+  return NextResponse.json({ message: "Deleted" });
+}
