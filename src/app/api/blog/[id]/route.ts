@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyJWT } from "@/lib/jwt";
 import { z } from "zod";
 import { verifyAccessToken } from "@/lib/auth";
 
@@ -31,8 +30,8 @@ export async function PUT(
 
   let userId;
   try {
-    const payload = await verifyJWT(token);
-    if (typeof payload !== "string" && "userId" in payload) {
+    const payload = await verifyAccessToken(token);
+    if (payload && typeof payload !== "string" && "userId" in payload) {
       userId = payload.userId;
     } else {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
@@ -76,8 +75,8 @@ export async function DELETE(
 
   let userId;
   try {
-    const payload = await verifyJWT(token);
-    if (typeof payload !== "string" && "userId" in payload) {
+    const payload = await verifyAccessToken(token);
+    if (payload && typeof payload !== "string" && "userId" in payload) {
       userId = payload.userId;
     } else {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });

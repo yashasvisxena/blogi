@@ -11,7 +11,7 @@ export function signRefreshToken(payload: object) {
   return jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" });
 }
 
-export function verifyAccessToken(token: string) {
+export async function verifyAccessToken(token: string) {
   try {
     return jwt.verify(token, ACCESS_SECRET);
   } catch {
