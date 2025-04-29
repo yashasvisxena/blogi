@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"; // your Prisma client
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -14,7 +15,7 @@ export async function GET(req: Request) {
 
   const userId = searchParams.get("userId"); // optional — filters to user's posts
 
-  const where = {
+  const where: Prisma.PostWhereInput = {
     ...(search && {
       OR: [
         { title: { contains: search, mode: "insensitive" } },
