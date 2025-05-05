@@ -24,6 +24,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { postSchema, type PostFormData } from "@/lib/validations/auth";
+import { useRef, useState } from "react";
 
 interface PostFormProps {
   initialData?: {
@@ -49,6 +50,12 @@ export function PostForm({ initialData }: PostFormProps) {
     },
   });
 
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    initialData?.cover || null
+  );
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const onSubmit = (data: PostFormData) => {
     if (initialData) {
       updatePost(
@@ -61,7 +68,7 @@ export function PostForm({ initialData }: PostFormProps) {
       );
     } else {
       createPost(
-        { ...data, authorId: "" }, // This will be set by the backend
+        { ...data, authorId: "" },
         {
           onSuccess: () => {
             router.push("/");
@@ -69,6 +76,27 @@ export function PostForm({ initialData }: PostFormProps) {
         }
       );
     }
+  };
+
+  // Handle image upload
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data?.data?.secure_url) {
+      setImagePreview(data.data.secure_url);
+      form.setValue("cover", data.data.secure_url);
+    }
+    setUploading(false);
   };
 
   return (
@@ -107,6 +135,36 @@ export function PostForm({ initialData }: PostFormProps) {
                       className="min-h-[200px]"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Image Upload Field */}
+            <FormField
+              control={form.control}
+              name="cover"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Cover Image</FormLabel>
+                  <FormControl>
+                    <>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleImageChange}
+                        disabled={uploading}
+                      />
+                      {uploading && <div>Uploading...</div>}
+                      {imagePreview && (
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="mt-2 max-h-48 rounded"
+                        />
+                      )}
+                    </>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
