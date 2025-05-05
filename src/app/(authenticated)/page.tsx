@@ -36,33 +36,31 @@ export default function Home() {
   const totalPages = Math.ceil((data?.total || 0) / 10);
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <form onSubmit={handleSearch} className="flex gap-4">
-            <Input
-              type="search"
-              placeholder="Search posts..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-md"
-            />
-            <Button type="submit">Search</Button>
-          </form>
-        </div>
+      <main className="container mx-auto p-4 flex flex-col flex-grow">
+        <form onSubmit={handleSearch} className="flex gap-4 mb-4">
+          <Input
+            type="search"
+            placeholder="Search posts..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-md"
+          />
+          <Button type="submit">Search</Button>
+        </form>
 
         {isLoading ? (
           <div className="text-center">Loading...</div>
         ) : (
-          <>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col flex-grow flex-1 min-h-0">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 overflow-y-auto flex-grow">
               {data?.posts.map((post: any) => (
                 <PostCard key={post.id} post={post} />
               ))}
             </div>
 
-            <div className="mt-8">
+            <div className="mt-6 py-4 border-t">
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
@@ -110,7 +108,7 @@ export default function Home() {
                 </PaginationContent>
               </Pagination>
             </div>
-          </>
+          </div>
         )}
       </main>
     </div>

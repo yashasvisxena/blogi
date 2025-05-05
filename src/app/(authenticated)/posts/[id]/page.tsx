@@ -1,23 +1,19 @@
-'use client'
+"use client";
 
-import { format } from 'date-fns'
-import { Navbar } from '@/components/Navbar'
-import { usePosts } from '@/services/postService'
-import { useAuthStore } from '@/store/authStore'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { format } from "date-fns";
+import { Navbar } from "@/components/Navbar";
+import { usePosts } from "@/services/postService";
+import { useAuthStore } from "@/store/authStore";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useParams } from "next/navigation";
 
-interface PostDetailPageProps {
-  params: {
-    id: string
-  }
-}
-
-export default function PostDetailPage({ params }: PostDetailPageProps) {
-  const { useGetPost } = usePosts()
-  const { data: post, isLoading } = useGetPost(params.id)
-  const { isAuthenticated, user } = useAuthStore()
+export default function PostDetailPage() {
+  const { useGetPost } = usePosts();
+  const { id } = useParams();
+  const { data: post, isLoading } = useGetPost(id as string);
+  const { isAuthenticated, user } = useAuthStore();
 
   if (isLoading) {
     return (
@@ -27,7 +23,7 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
           <div className="text-center">Loading...</div>
         </main>
       </div>
-    )
+    );
   }
 
   if (!post) {
@@ -38,7 +34,7 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
           <div className="text-center">Post not found</div>
         </main>
       </div>
-    )
+    );
   }
 
   return (
@@ -50,12 +46,12 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
             <CardHeader>
               <CardTitle className="text-3xl">{post.title}</CardTitle>
               <div className="text-sm text-muted-foreground">
-                By {post.author.name} • Created{' '}
-                {format(new Date(post.createdAt), 'MMM d, yyyy')}
+                By {post.author.username} • Created{" "}
+                {format(new Date(post.createdAt), "MMM d, yyyy")}
                 {post.updatedAt !== post.createdAt && (
                   <span>
-                    {' '}
-                    • Updated {format(new Date(post.updatedAt), 'MMM d, yyyy')}
+                    {" "}
+                    • Updated {format(new Date(post.updatedAt), "MMM d, yyyy")}
                   </span>
                 )}
               </div>
@@ -82,5 +78,5 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
         </div>
       </main>
     </div>
-  )
-} 
+  );
+}

@@ -40,9 +40,29 @@ export function PostCard({ post }: PostCardProps) {
     }
   };
 
+  // Utility to trim content
+  const trimContent = (content: string, maxLength: number) => {
+    if (content.length <= maxLength) return content;
+    return content.slice(0, maxLength) + "...";
+  };
+
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className="w-full h-[420px] flex flex-col shadow-lg">
+      {/* Cover Image or Fallback */}
+      {post.cover && post.cover === "null" ? (
+        <div className="h-40 w-full flex items-center justify-center bg-gray-200 rounded-t-md text-gray-500 text-3xl font-bold">
+          No Image
+        </div>
+      ) : (
+        <div className="h-40 w-full overflow-hidden rounded-t-md">
+          <img
+            src={post.cover}
+            alt={post.title}
+            className="object-cover w-full h-full"
+          />
+        </div>
+      )}
+      <CardHeader className="flex-1">
         <CardTitle className="text-xl">
           <Link href={`/posts/${post.id}`} className="hover:underline">
             {post.title}
@@ -59,10 +79,10 @@ export function PostCard({ post }: PostCardProps) {
           )}
         </div>
       </CardHeader>
-      <CardContent>
-        <p className="line-clamp-3">{post.content}</p>
+      <CardContent className="flex-1">
+        <p className="text-base">{trimContent(post.content, 120)}</p>
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex justify-between mt-auto">
         <Link href={`/posts/${post.id}`}>
           <Button variant="ghost">Read More</Button>
         </Link>

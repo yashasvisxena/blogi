@@ -11,6 +11,14 @@ const postSchema = z.object({
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   const post = await prisma.post.findUnique({
     where: { id: params.id },
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+    },
   });
 
   if (!post) {

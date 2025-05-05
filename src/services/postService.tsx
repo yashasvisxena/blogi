@@ -20,7 +20,7 @@ interface Post {
   content: string;
   author: {
     id: string;
-    name: string;
+    username: string;
   };
   createdAt: string;
   updatedAt: string;
