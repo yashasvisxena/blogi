@@ -17,7 +17,7 @@ export default async function middleware(request: NextRequest) {
 
   // Authenticated user trying to access login/signup routes
   if (isAuthenticated && ["/login", "/register"].includes(nextUrl.pathname)) {
-    console.log("Authenticated - Redirecting to /connect/chats");
+    console.log("Authenticated - Redirecting to /");
     return NextResponse.redirect(new URL("/", nextUrl.origin));
   }
 

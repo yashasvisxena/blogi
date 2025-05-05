@@ -5,7 +5,6 @@ import { usePosts } from "@/services/postService";
 import { PostCard } from "@/components/blog/PostCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Navbar } from "@/components/Navbar";
 import {
   Pagination,
   PaginationContent,
@@ -36,8 +35,7 @@ export default function Home() {
   const totalPages = Math.ceil((data?.total || 0) / 10);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
+    <div className="flex flex-col min-h-0 flex-grow flex-1">
       <main className="container mx-auto p-4 flex flex-col flex-grow">
         <form onSubmit={handleSearch} className="flex gap-4 mb-4">
           <Input

@@ -16,7 +16,7 @@ export function Navbar() {
     logoutUser(undefined, {
       onSuccess: () => {
         logout();
-        router.push("/login");
+        window.location.reload();
       },
     });
   };
