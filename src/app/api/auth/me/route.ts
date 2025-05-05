@@ -5,7 +5,7 @@ import { verifyAccessToken } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
+    const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -21,7 +21,6 @@ export async function GET(req: NextRequest) {
       where: { id: payload.userId },
       select: {
         id: true,
-        name: true,
         username: true,
         createdAt: true,
       },

@@ -1,25 +1,26 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { useAuthStore } from '@/store/authStore'
-import { Button } from '@/components/ui/button'
-import { useAuth } from '@/services/AuthService'
-import { useRouter } from 'next/navigation'
+import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/services/AuthService";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
-  const { isAuthenticated, user, logout } = useAuthStore()
-  const { useLogout } = useAuth()
-  const { mutate: logoutUser } = useLogout()
-  const router = useRouter()
+  const { isAuthenticated, user, logout } = useAuthStore();
+  console.log(user);
+  const { useLogout } = useAuth();
+  const { mutate: logoutUser } = useLogout();
+  const router = useRouter();
 
   const handleLogout = () => {
     logoutUser(undefined, {
       onSuccess: () => {
-        logout()
-        router.push('/login')
+        logout();
+        router.push("/login");
       },
-    })
-  }
+    });
+  };
 
   return (
     <nav className="border-b">
@@ -34,7 +35,7 @@ export function Navbar() {
                 <Link href="/create-post">
                   <Button variant="outline">Create Post</Button>
                 </Link>
-                <span className="text-sm">Welcome, {user?.name}</span>
+                <span className="text-sm">Welcome, {user?.username}</span>
                 <Button variant="ghost" onClick={handleLogout}>
                   Logout
                 </Button>
@@ -53,5 +54,5 @@ export function Navbar() {
         </div>
       </div>
     </nav>
-  )
-} 
+  );
+}

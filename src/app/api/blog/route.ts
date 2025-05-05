@@ -10,7 +10,7 @@ const postSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
 
   const user = token && verifyAccessToken(token);
   if (!user) return new Response("Unauthorized", { status: 401 });
