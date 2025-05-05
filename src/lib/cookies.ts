@@ -1,10 +1,12 @@
 import { cookies } from "next/headers";
 
 export async function setRefreshTokenCookie(token: string) {
-  (await cookies()).set("refreshToken", token, {
+  (await cookies()).set({
+    name: "refreshToken",
+    value: token,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    path: "/",
+    sameSite: "strict",
     maxAge: 60 * 60 * 24 * 7, // 7 days
   });
 }

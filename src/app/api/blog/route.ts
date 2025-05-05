@@ -43,10 +43,10 @@ export async function POST(req: Request) {
       cover: parsed.data.cover || "",
       author: {
         connect: {
-          id: userId
-        }
-      }
-    }
+          id: userId,
+        },
+      },
+    },
   });
 
   return NextResponse.json(post);

@@ -22,7 +22,6 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const { useGetPosts } = usePosts();
-  const { useUser } = useAuth();
   const { data, isLoading } = useGetPosts({
     page,
     limit: 10,
@@ -30,15 +29,6 @@ export default function Home() {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
-  const { accessToken, setUser } = useAuthStore();
-  const { data: user } = useUser({
-    enabled: !!accessToken,
-  });
-  useEffect(() => {
-    if (user) {
-      setUser(user);
-    }
-  }, [user]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

@@ -17,13 +17,13 @@ function isPublic(pathname: string) {
 
 export async function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
-
-  const token = req.cookies.get("refreshToken")?.value;
-  const isAuthenticated = Boolean(token);
+  const { cookies } = req;
+  const token = cookies.get("refreshToken")?.value;
+  const isAuthenticated = !!token;
 
   // Redirect logged-in users away from login/signup
   if ((pathname === "/login" || pathname === "/signup") && isAuthenticated) {
-    return NextResponse.redirect(new URL("/posts", origin));
+    return NextResponse.redirect(new URL("/", origin));
   }
 
   // Allow public routes always

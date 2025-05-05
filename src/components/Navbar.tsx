@@ -7,8 +7,7 @@ import { useAuth } from "@/services/AuthService";
 import { useRouter } from "next/navigation";
 
 export function Navbar() {
-  const { isAuthenticated, user, logout } = useAuthStore();
-  console.log(user);
+  const { user, logout } = useAuthStore();
   const { useLogout } = useAuth();
   const { mutate: logoutUser } = useLogout();
   const router = useRouter();
@@ -30,7 +29,7 @@ export function Navbar() {
             Blog App
           </Link>
           <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
+            {user ? (
               <>
                 <Link href="/create-post">
                   <Button variant="outline">Create Post</Button>
