@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-// import useCommonStore from "@/store/CommonStore";
+import { useAuthStore } from "@/store/authStore";
 
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
@@ -7,8 +7,7 @@ let refreshSubscribers: ((token: string) => void)[] = [];
 const setupInterceptors = (apiClient: AxiosInstance) => {
   apiClient.interceptors.request.use(
     async (config) => {
-      const accessToken = null;
-      //useCommonStore.getState().accessToken;
+      const accessToken = useAuthStore.getState().accessToken;
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
@@ -36,12 +35,16 @@ const setupInterceptors = (apiClient: AxiosInstance) => {
         isRefreshing = true;
 
         try {
-          const refreshResponse = await axios.get("/api/auth/refresh", {
-            withCredentials: true,
-          });
+          const refreshResponse = await axios.post(
+            "/api/auth/refresh",
+            {},
+            {
+              withCredentials: true,
+            }
+          );
 
-          const newAccessToken = refreshResponse.data.access_token;
-          //   useCommonStore.getState().setAccessToken(newAccessToken);
+          const newAccessToken = refreshResponse.data.accessToken;
+          useAuthStore.getState().setAccessToken(newAccessToken);
 
           refreshSubscribers.forEach((cb) => cb(newAccessToken));
           refreshSubscribers = [];
@@ -51,14 +54,13 @@ const setupInterceptors = (apiClient: AxiosInstance) => {
         } catch (refreshError) {
           console.error("Refresh failed. Logging out...");
 
-          // 🔥 Hit logout API
           try {
             await axios.post("/api/auth/logout", {}, { withCredentials: true });
           } catch (e: unknown) {
             // even if logout fails, continue cleanup
           }
 
-          //   useCommonStore.getState().setAccessToken(null);
+          useAuthStore.getState().logout();
           window.location.href = "/login";
 
           return Promise.reject(refreshError);
