@@ -8,9 +8,13 @@ const postSchema = z.object({
   content: z.string().min(1),
 });
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   const post = await prisma.post.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: {
       author: {
         select: {
@@ -30,8 +34,9 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const token = req.headers.get("authorization")?.replace("Bearer ", "");
   const user = token && verifyAccessToken(token);
   if (!user) return new Response("Unauthorized", { status: 401 });
@@ -48,7 +53,7 @@ export async function PUT(
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  const post = await prisma.post.findUnique({ where: { id: params.id } });
+  const post = await prisma.post.findUnique({ where: { id: id } });
 
   if (!post || post.authorId !== userId) {
     return NextResponse.json(
@@ -65,7 +70,7 @@ export async function PUT(
   }
 
   const updated = await prisma.post.update({
-    where: { id: params.id },
+    where: { id: id },
     data: parsed.data,
   });
 
@@ -74,8 +79,9 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const token = req.headers.get("authorization")?.replace("Bearer ", "");
 
   const user = token && verifyAccessToken(token);
@@ -93,7 +99,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  const post = await prisma.post.findUnique({ where: { id: params.id } });
+  const post = await prisma.post.findUnique({ where: { id: id } });
 
   if (!post || post.authorId !== userId) {
     return NextResponse.json(
@@ -102,7 +108,7 @@ export async function DELETE(
     );
   }
 
-  await prisma.post.delete({ where: { id: params.id } });
+  await prisma.post.delete({ where: { id: id } });
 
   return NextResponse.json({ message: "Deleted" });
 }

@@ -4,13 +4,11 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/services/AuthService";
-import { useRouter } from "next/navigation";
 
 export function Navbar() {
   const { user, logout } = useAuthStore();
   const { useLogout } = useAuth();
   const { mutate: logoutUser } = useLogout();
-  const router = useRouter();
 
   const handleLogout = () => {
     logoutUser(undefined, {
