@@ -1,7 +1,6 @@
 import { PrismaClient } from "@/generated/prisma";
 import bcrypt from "bcrypt";
 import { signAccessToken, signRefreshToken } from "@/lib/auth";
-import { setRefreshTokenCookie } from "@/lib/cookies";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 

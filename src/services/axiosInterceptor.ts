@@ -61,7 +61,6 @@ const setupInterceptors = (apiClient: AxiosInstance) => {
           }
 
           useAuthStore.getState().logout();
-          window.location.href = "/login";
 
           return Promise.reject(refreshError);
         } finally {

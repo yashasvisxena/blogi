@@ -2,8 +2,7 @@
 
 import { PostForm } from '@/components/blog/PostForm'
 import { Navbar } from '@/components/Navbar'
-import { useAuthStore } from '@/store/authStore'
-import { redirect } from 'next/navigation'
+
 
 export default function CreatePostPage() {
 

@@ -1,9 +1,8 @@
 import { verifyRefreshToken, signAccessToken } from "@/lib/auth";
-import { getRefreshTokenFromCookie } from "@/lib/cookies";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function POST() {
-  const refreshToken = await getRefreshTokenFromCookie();
+export async function POST(req: NextRequest) {
+  const refreshToken = req.cookies.get("refreshToken")?.value;
 
   if (!refreshToken)
     return NextResponse.json({ error: "No token" }, { status: 401 });
