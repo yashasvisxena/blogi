@@ -1,7 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@/generated/prisma";
 import bcrypt from "bcrypt";
 import { signAccessToken, signRefreshToken } from "@/lib/auth";
 import { setRefreshTokenCookie } from "@/lib/cookies";
+
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   const { username, password } = await req.json();
@@ -11,7 +13,7 @@ export async function POST(req: Request) {
     return new Response("Invalid credentials", { status: 401 });
   }
 
-  const payload = { userId: user.id, email: user.username };
+  const payload = { userId: user.id, username: user.username };
 
   const accessToken = signAccessToken(payload);
   const refreshToken = signRefreshToken(payload);

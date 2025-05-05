@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyJWT } from "@/lib/jwt";
 import { z } from "zod";
 import { verifyAccessToken } from "@/lib/auth";
 
 const postSchema = z.object({
   title: z.string().min(1),
   content: z.string().min(1),
+  cover: z.string().nullable(),
 });
 
 export async function POST(req: Request) {
@@ -17,8 +17,8 @@ export async function POST(req: Request) {
 
   let userId;
   try {
-    const payload = await verifyJWT(token);
-    if (typeof payload !== "string" && "userId" in payload) {
+    const payload = await verifyAccessToken(token);
+    if (payload && typeof payload !== "string" && "userId" in payload) {
       userId = payload.userId;
     } else {
       return NextResponse.json(
@@ -36,12 +36,17 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
   }
-
   const post = await prisma.post.create({
     data: {
-      ...parsed.data,
-      authorId: userId,
-    },
+      title: parsed.data.title,
+      content: parsed.data.content,
+      cover: parsed.data.cover || "",
+      author: {
+        connect: {
+          id: userId
+        }
+      }
+    }
   });
 
   return NextResponse.json(post);

@@ -36,12 +36,9 @@ const setupInterceptors = (apiClient: AxiosInstance) => {
         isRefreshing = true;
 
         try {
-          const refreshResponse = await axios.get(
-            "/api/auth/refreshAccessToken",
-            {
-              withCredentials: true,
-            }
-          );
+          const refreshResponse = await axios.get("/api/auth/refresh", {
+            withCredentials: true,
+          });
 
           const newAccessToken = refreshResponse.data.access_token;
           //   useCommonStore.getState().setAccessToken(newAccessToken);
@@ -57,7 +54,7 @@ const setupInterceptors = (apiClient: AxiosInstance) => {
           // 🔥 Hit logout API
           try {
             await axios.post("/api/auth/logout", {}, { withCredentials: true });
-          } catch (_) {
+          } catch (e: unknown) {
             // even if logout fails, continue cleanup
           }
 

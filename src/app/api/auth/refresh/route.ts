@@ -14,7 +14,7 @@ export async function POST() {
 
   const newAccessToken = signAccessToken({
     userId: decoded.userId,
-    email: decoded.email,
+    username: decoded.username,
   });
 
   return Response.json({ accessToken: newAccessToken });

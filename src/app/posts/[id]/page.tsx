@@ -1,0 +1,86 @@
+'use client'
+
+import { format } from 'date-fns'
+import { Navbar } from '@/components/Navbar'
+import { usePosts } from '@/services/postService'
+import { useAuthStore } from '@/store/authStore'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+interface PostDetailPageProps {
+  params: {
+    id: string
+  }
+}
+
+export default function PostDetailPage({ params }: PostDetailPageProps) {
+  const { useGetPost } = usePosts()
+  const { data: post, isLoading } = useGetPost(params.id)
+  const { isAuthenticated, user } = useAuthStore()
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center">Loading...</div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!post) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center">Post not found</div>
+        </main>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen">
+      <Navbar />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-3xl">{post.title}</CardTitle>
+              <div className="text-sm text-muted-foreground">
+                By {post.author.name} • Created{' '}
+                {format(new Date(post.createdAt), 'MMM d, yyyy')}
+                {post.updatedAt !== post.createdAt && (
+                  <span>
+                    {' '}
+                    • Updated {format(new Date(post.updatedAt), 'MMM d, yyyy')}
+                  </span>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="prose max-w-none">
+                <p className="whitespace-pre-wrap">{post.content}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="mt-8 flex justify-between">
+            <Link href="/">
+              <Button variant="outline">Back to Posts</Button>
+            </Link>
+            {isAuthenticated && user?.id === post.author.id && (
+              <div className="space-x-2">
+                <Link href={`/posts/${post.id}/edit`}>
+                  <Button>Edit Post</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+} 
