@@ -1,6 +1,6 @@
 import axios from "axios";
 import setupInterceptors from "./axiosInterceptor";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -39,10 +39,7 @@ export const useAuth = () => {
 
   const useRegister = () => {
     return useMutation({
-      mutationFn: async (data: {
-        username: string;
-        password: string;
-      }) => {
+      mutationFn: async (data: { username: string; password: string }) => {
         try {
           const response = await open.post("register/", data);
           return response.data;
@@ -79,7 +76,7 @@ export const useAuth = () => {
     });
   };
 
-  const useUser = () => {
+  const useUser = (options?: any) => {
     return useQuery({
       queryKey: ["user"],
       queryFn: async () => {
@@ -90,6 +87,7 @@ export const useAuth = () => {
           throw error;
         }
       },
+      ...options,
     });
   };
 

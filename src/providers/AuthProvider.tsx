@@ -9,14 +9,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { useUser } = useAuth();
   const { data: user, isLoading, error } = useUser();
   const { setIsAuthenticated, setUser } = useAuthStore();
-  console.log(user);
 
   useEffect(() => {
     if (user) {
       setIsAuthenticated(true);
       setUser(user);
     }
-  }, [user, setIsAuthenticated, setUser]);
+  }, [user]);
 
   if (isLoading) {
     return (

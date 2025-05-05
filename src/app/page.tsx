@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import { usePosts } from '@/services/postService'
-import { PostCard } from '@/components/blog/PostCard'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Navbar } from '@/components/Navbar'
+import { useEffect, useState } from "react";
+import { usePosts } from "@/services/postService";
+import { PostCard } from "@/components/blog/PostCard";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
 import {
   Pagination,
   PaginationContent,
@@ -14,26 +14,38 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
+import { useAuthStore } from "@/store/authStore";
+import { useAuth } from "@/services/AuthService";
 
 export default function Home() {
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const { useGetPosts } = usePosts()
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const { useGetPosts } = usePosts();
+  const { useUser } = useAuth();
   const { data, isLoading } = useGetPosts({
     page,
     limit: 10,
     search,
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-  })
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+  const { accessToken, setUser } = useAuthStore();
+  const { data: user } = useUser({
+    enabled: !!accessToken,
+  });
+  useEffect(() => {
+    if (user) {
+      setUser(user);
+    }
+  }, [user]);
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    setPage(1)
-  }
+    e.preventDefault();
+    setPage(1);
+  };
 
-  const totalPages = Math.ceil((data?.total || 0) / 10)
+  const totalPages = Math.ceil((data?.total || 0) / 10);
 
   return (
     <div className="min-h-screen">
@@ -66,37 +78,45 @@ export default function Home() {
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
-                      href="#" 
+                    <PaginationPrevious
+                      href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        if (page > 1) setPage(page - 1)
+                        e.preventDefault();
+                        if (page > 1) setPage(page - 1);
                       }}
-                      className={page === 1 ? 'pointer-events-none opacity-50' : ''}
+                      className={
+                        page === 1 ? "pointer-events-none opacity-50" : ""
+                      }
                     />
                   </PaginationItem>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                    <PaginationItem key={pageNum}>
-                      <PaginationLink
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setPage(pageNum)
-                        }}
-                        isActive={pageNum === page}
-                      >
-                        {pageNum}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (pageNum) => (
+                      <PaginationItem key={pageNum}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setPage(pageNum);
+                          }}
+                          isActive={pageNum === page}
+                        >
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
                   <PaginationItem>
                     <PaginationNext
                       href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        if (page < totalPages) setPage(page + 1)
+                        e.preventDefault();
+                        if (page < totalPages) setPage(page + 1);
                       }}
-                      className={page === totalPages ? 'pointer-events-none opacity-50' : ''}
+                      className={
+                        page === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -106,5 +126,5 @@ export default function Home() {
         )}
       </main>
     </div>
-  )
+  );
 }

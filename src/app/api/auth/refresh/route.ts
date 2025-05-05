@@ -1,15 +1,20 @@
 import { verifyRefreshToken, signAccessToken } from "@/lib/auth";
 import { getRefreshTokenFromCookie } from "@/lib/cookies";
+import { NextResponse } from "next/server";
 
 export async function POST() {
   const refreshToken = await getRefreshTokenFromCookie();
 
-  if (!refreshToken) return new Response("No token", { status: 401 });
+  if (!refreshToken)
+    return NextResponse.json({ error: "No token" }, { status: 401 });
 
   const decoded = verifyRefreshToken(refreshToken);
 
   if (!decoded || typeof decoded !== "object") {
-    return new Response("Invalid refresh token", { status: 401 });
+    return NextResponse.json(
+      { error: "Invalid refresh token" },
+      { status: 401 }
+    );
   }
 
   const newAccessToken = signAccessToken({
@@ -17,5 +22,5 @@ export async function POST() {
     username: decoded.username,
   });
 
-  return Response.json({ accessToken: newAccessToken });
+  return NextResponse.json({ accessToken: newAccessToken });
 }

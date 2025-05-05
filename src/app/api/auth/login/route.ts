@@ -2,6 +2,7 @@ import { PrismaClient } from "@/generated/prisma";
 import bcrypt from "bcrypt";
 import { signAccessToken, signRefreshToken } from "@/lib/auth";
 import { setRefreshTokenCookie } from "@/lib/cookies";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
@@ -20,5 +21,5 @@ export async function POST(req: Request) {
 
   setRefreshTokenCookie(refreshToken);
 
-  return Response.json({ accessToken });
+  return NextResponse.json({ accessToken });
 }
