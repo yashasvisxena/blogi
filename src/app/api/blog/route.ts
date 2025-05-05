@@ -36,18 +36,26 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
   }
-  const post = await prisma.post.create({
-    data: {
-      title: parsed.data.title,
-      content: parsed.data.content,
-      cover: parsed.data.cover || "",
-      author: {
-        connect: {
-          id: userId,
+  let post;
+  try {
+    post = await prisma.post.create({
+      data: {
+        title: parsed.data.title,
+        content: parsed.data.content,
+        cover: parsed.data.cover || "null",
+        author: {
+          connect: {
+            id: userId,
+          },
         },
       },
-    },
-  });
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to create post", details: error },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json(post);
 }

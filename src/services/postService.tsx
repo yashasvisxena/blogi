@@ -51,20 +51,26 @@ export const usePosts = () => {
     return useQuery<GetPostsResponse>({
       queryKey: ["posts", { page, limit, search, sortBy, sortOrder, userId }],
       queryFn: async () => {
-        const params = new URLSearchParams({
-          page: String(page),
-          limit: String(limit),
-          search,
-          sortBy,
-          sortOrder,
-        });
+        try {
+          const params = new URLSearchParams({
+            page: String(page),
+            limit: String(limit),
+            search,
+            sortBy,
+            sortOrder,
+          });
 
-        if (userId) {
-          params.append("userId", userId);
+          if (userId) {
+            params.append("userId", userId);
+          }
+
+          const { data } = await open.get(`blogs?${params.toString()}`);
+          console.log("Response data:", data);
+          return data;
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
+          throw error;
         }
-
-        const { data } = await open.get(`blogs?${params.toString()}`);
-        return data;
       },
     });
   };
@@ -73,8 +79,14 @@ export const usePosts = () => {
     return useQuery<Post>({
       queryKey: [`post${id}`, id],
       queryFn: async () => {
-        const { data } = await open.get(`blog/${id}`);
-        return data;
+        try {
+          const { data } = await open.get(`blog/${id}`);
+          console.log("Response data:", data);
+          return data;
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
+          throw error;
+        }
       },
     });
   };
@@ -82,8 +94,14 @@ export const usePosts = () => {
   const useDeletePost = () => {
     return useMutation({
       mutationFn: async (id: string) => {
-        const { data } = await close.delete(`blog/${id}`);
-        return data;
+        try {
+          const { data } = await close.delete(`blog/${id}`);
+          console.log("Response data:", data);
+          return data;
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
+          throw error;
+        }
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -97,9 +115,21 @@ export const usePosts = () => {
 
   const useUpdatePost = () => {
     return useMutation({
-      mutationFn: async ({ id, postData }: { id: string; postData: Partial<Post> }) => {
-        const { data } = await close.put(`blog/${id}`, postData);
-        return data;
+      mutationFn: async ({
+        id,
+        postData,
+      }: {
+        id: string;
+        postData: Partial<Post>;
+      }) => {
+        try {
+          const { data } = await close.put(`blog/${id}`, postData);
+          console.log("Response data:", data);
+          return data;
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
+          throw error;
+        }
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -118,8 +148,14 @@ export const usePosts = () => {
         content: string;
         authorId: string;
       }) => {
-        const { data } = await close.post(`blog/`, postData);
-        return data;
+        try {
+          const { data } = await close.post(`blog/`, postData);
+          console.log("Response data:", data);
+          return data;
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
+          throw error;
+        }
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -134,10 +170,16 @@ export const usePosts = () => {
   const useUpload = () => {
     return useMutation({
       mutationFn: async (file: File) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        const { data } = await close.post(`upload/`, formData);
-        return data;
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          const { data } = await close.post(`upload/`, formData);
+          console.log("Response data:", data);
+          return data;
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
+          throw error;
+        }
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });

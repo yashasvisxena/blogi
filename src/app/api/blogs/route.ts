@@ -31,6 +31,14 @@ export async function GET(req: Request) {
       skip,
       take: limit,
       orderBy: { [sortBy]: sortOrder },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
     }),
     prisma.post.count(),
   ]);

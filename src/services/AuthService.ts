@@ -22,8 +22,10 @@ export const useAuth = () => {
       mutationFn: async (data: { username: string; password: string }) => {
         try {
           const response = await open.post("login/", data);
+          console.log("Response data:", response.data);
           return response.data;
-        } catch (error) {
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },
@@ -42,8 +44,10 @@ export const useAuth = () => {
       mutationFn: async (data: { username: string; password: string }) => {
         try {
           const response = await open.post("register/", data);
+          console.log("Response data:", response.data);
           return response.data;
-        } catch (error) {
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },
@@ -62,8 +66,10 @@ export const useAuth = () => {
       mutationFn: async () => {
         try {
           const response = await open.post("logout/");
+          console.log("Response data:", response.data);
           return response.data;
-        } catch (error) {
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },
@@ -82,8 +88,10 @@ export const useAuth = () => {
       queryFn: async () => {
         try {
           const response = await close.get("me/");
+          console.log("Response data:", response.data);
           return response.data;
-        } catch (error) {
+        } catch (error: any) {
+          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },

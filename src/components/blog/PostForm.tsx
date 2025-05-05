@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { usePosts } from '@/services/postService'
-import { Button } from '@/components/ui/button'
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { usePosts } from "@/services/postService";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,33 +12,42 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { postSchema, type PostFormData } from '@/lib/validations/auth'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { postSchema, type PostFormData } from "@/lib/validations/auth";
 
 interface PostFormProps {
   initialData?: {
-    id: string
-    title: string
-    content: string
-  }
+    id: string;
+    title: string;
+    content: string;
+    cover: string | null;
+  };
 }
 
 export function PostForm({ initialData }: PostFormProps) {
-  const router = useRouter()
-  const { useCreatePost, useUpdatePost } = usePosts()
-  const { mutate: createPost, isPending: isCreating } = useCreatePost()
-  const { mutate: updatePost, isPending: isUpdating } = useUpdatePost()
+  const router = useRouter();
+  const { useCreatePost, useUpdatePost } = usePosts();
+  const { mutate: createPost, isPending: isCreating } = useCreatePost();
+  const { mutate: updatePost, isPending: isUpdating } = useUpdatePost();
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
     defaultValues: {
-      title: initialData?.title || '',
-      content: initialData?.content || '',
+      title: initialData?.title || "",
+      content: initialData?.content || "",
+      cover: initialData?.cover || null,
     },
-  })
+  });
 
   const onSubmit = (data: PostFormData) => {
     if (initialData) {
@@ -46,28 +55,28 @@ export function PostForm({ initialData }: PostFormProps) {
         { id: initialData.id, postData: data },
         {
           onSuccess: () => {
-            router.push('/')
+            router.push("/");
           },
         }
-      )
+      );
     } else {
       createPost(
-        { ...data, authorId: '' }, // This will be set by the backend
+        { ...data, authorId: "" }, // This will be set by the backend
         {
           onSuccess: () => {
-            router.push('/')
+            router.push("/");
           },
         }
-      )
+      );
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle>{initialData ? 'Edit Post' : 'Create Post'}</CardTitle>
+        <CardTitle>{initialData ? "Edit Post" : "Create Post"}</CardTitle>
         <CardDescription>
-          {initialData ? 'Update your blog post' : 'Write a new blog post'}
+          {initialData ? "Update your blog post" : "Write a new blog post"}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -108,22 +117,22 @@ export function PostForm({ initialData }: PostFormProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.push('/')}
+              onClick={() => router.push("/")}
             >
               Cancel
             </Button>
             <Button type="submit" disabled={isCreating || isUpdating}>
               {isCreating || isUpdating
                 ? initialData
-                  ? 'Updating...'
-                  : 'Creating...'
+                  ? "Updating..."
+                  : "Creating..."
                 : initialData
-                ? 'Update Post'
-                : 'Create Post'}
+                ? "Update Post"
+                : "Create Post"}
             </Button>
           </CardFooter>
         </form>
       </Form>
     </Card>
-  )
-} 
+  );
+}

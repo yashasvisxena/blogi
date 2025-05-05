@@ -15,8 +15,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useAuthStore } from "@/store/authStore";
-import { useAuth } from "@/services/AuthService";
 
 export default function Home() {
   const [page, setPage] = useState(1);
@@ -59,7 +57,7 @@ export default function Home() {
         ) : (
           <>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {data?.posts.map((post) => (
+              {data?.posts.map((post: any) => (
                 <PostCard key={post.id} post={post} />
               ))}
             </div>
