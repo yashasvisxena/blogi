@@ -11,9 +11,7 @@ export async function GET(req: Request) {
 
   const search = searchParams.get("search") || "";
   const sortBy = searchParams.get("sortBy") || "createdAt";
-  const sortOrder = (
-    searchParams.get("sortOrder") === "asc" ? "asc" : "desc"
-  ) as Prisma.SortOrder;
+  const sortOrder = searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
 
   const userId = searchParams.get("userId"); // optional — filters to user's posts
 
