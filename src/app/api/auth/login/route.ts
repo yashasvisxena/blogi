@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { signAccessToken, signRefreshToken } from "@/lib/auth";
 import { NextResponse } from "next/server";
