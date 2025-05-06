@@ -11,7 +11,8 @@ export async function GET(req: Request) {
 
   const search = searchParams.get("search") || "";
   const sortBy = searchParams.get("sortBy") || "createdAt";
-  const sortOrder = searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
+  const sortOrder: Prisma.SortOrder =
+    searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
 
   const userId = searchParams.get("userId"); // optional — filters to user's posts
 
@@ -25,12 +26,17 @@ export async function GET(req: Request) {
     ...(userId && { authorId: userId }),
   };
 
+  const orderBy =
+    sortBy === "author.username"
+      ? { author: { username: sortOrder } }
+      : { [sortBy]: sortOrder };
+
   const [posts, total] = await Promise.all([
     prisma.post.findMany({
       where,
       skip,
       take: limit,
-      orderBy: { [sortBy]: sortOrder },
+      orderBy,
       include: {
         author: {
           select: {

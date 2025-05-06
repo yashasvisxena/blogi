@@ -4,10 +4,11 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "sonner";
 import { Navbar } from "@/components/Navbar";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Blog App",
+  title: "BlogI",
   description: "A modern blog application",
 };
 
@@ -19,11 +20,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className + "min-h-screen"}>
-        <Providers>
-          <Navbar />
-          {children}
-          <Toaster richColors expand />
-        </Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Providers>
+            <Navbar />
+            {children}
+            <Toaster richColors expand />
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );

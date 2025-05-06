@@ -40,15 +40,13 @@ export function PostCard({ post }: PostCardProps) {
     }
   };
 
-  // Utility to trim content
   const trimContent = (content: string, maxLength: number) => {
     if (content.length <= maxLength) return content;
     return content.slice(0, maxLength) + "...";
   };
 
   return (
-    <Card className="w-full h-[420px] flex flex-col shadow-lg">
-      {/* Cover Image or Fallback */}
+    <Card className="w-full h-[420px] pt-0 flex flex-col shadow-lg">
       {post.cover && post.cover === "null" ? (
         <div className="h-40 w-full flex items-center justify-center bg-gray-200 rounded-t-md text-gray-500 text-3xl font-bold">
           No Image
@@ -73,7 +71,6 @@ export function PostCard({ post }: PostCardProps) {
           {format(new Date(post.createdAt), "MMM d, yyyy")}
           {post.updatedAt !== post.createdAt && (
             <span>
-              {" "}
               • Updated {format(new Date(post.updatedAt), "MMM d, yyyy")}
             </span>
           )}

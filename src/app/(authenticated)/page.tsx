@@ -14,17 +14,31 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Home() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [showOnlyMyPosts, setShowOnlyMyPosts] = useState(false);
   const { useGetPosts } = usePosts();
+  const { user } = useAuthStore();
   const { data, isLoading } = useGetPosts({
     page,
     limit: 10,
     search,
-    sortBy: "createdAt",
-    sortOrder: "desc",
+    sortBy,
+    sortOrder,
+    userId: showOnlyMyPosts ? user?.id : undefined,
   });
 
   const handleSearch = (e: React.FormEvent) => {
@@ -32,14 +46,6 @@ export default function Home() {
     setPage(1);
   };
 
-  if (data?.posts.length === 0) {
-    return (
-      <div className="text-center">
-        <h1 className="text-2xl font-bold">No posts found</h1>
-        <p className="text-gray-500">Create a post to get started</p>
-      </div>
-    );
-  }
   const totalPages = Math.ceil((data?.total || 0) / 10);
 
   return (
@@ -54,10 +60,44 @@ export default function Home() {
             className="max-w-md"
           />
           <Button type="submit">Search</Button>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Sort By" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="createdAt">Created At</SelectItem>
+              <SelectItem value="title">Title</SelectItem>
+              <SelectItem value="author.username">Author</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="flex items-center gap-2">
+            <span>Asc</span>
+            <Switch
+              checked={sortOrder === "desc"}
+              onCheckedChange={(checked) =>
+                setSortOrder(checked ? "desc" : "asc")
+              }
+            />
+            <span>Desc</span>
+          </div>
+          {user && (
+            <div className="flex items-center gap-2">
+              <span>My Posts</span>
+              <Switch
+                checked={showOnlyMyPosts}
+                onCheckedChange={setShowOnlyMyPosts}
+              />
+            </div>
+          )}
         </form>
 
         {isLoading ? (
           <div className="text-center">Loading...</div>
+        ) : data?.posts.length === 0 ? (
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">No posts found</h1>
+            <p className="text-gray-500">Create a post to get started</p>
+          </div>
         ) : (
           <div className="flex flex-col flex-grow flex-1 min-h-0">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 overflow-y-auto flex-grow">

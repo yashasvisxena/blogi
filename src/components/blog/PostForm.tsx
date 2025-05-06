@@ -37,9 +37,10 @@ interface PostFormProps {
 
 export function PostForm({ initialData }: PostFormProps) {
   const router = useRouter();
-  const { useCreatePost, useUpdatePost } = usePosts();
+  const { useCreatePost, useUpdatePost, useUpload } = usePosts();
   const { mutate: createPost, isPending: isCreating } = useCreatePost();
   const { mutate: updatePost, isPending: isUpdating } = useUpdatePost();
+  const { mutateAsync: uploadFile, isPending: isUploading } = useUpload();
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
@@ -53,50 +54,60 @@ export function PostForm({ initialData }: PostFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialData?.cover || null
   );
-  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onSubmit = (data: PostFormData) => {
-    if (initialData) {
-      updatePost(
-        { id: initialData.id, postData: data },
-        {
-          onSuccess: () => {
-            router.push("/");
-          },
+  const onSubmit = async (data: PostFormData) => {
+    try {
+      let coverUrl = data.cover;
+
+      // Upload file if a new file is selected
+      if (selectedFile) {
+        const uploadResult = await uploadFile(selectedFile);
+        if (uploadResult?.data?.secure_url) {
+          coverUrl = uploadResult.data.secure_url;
         }
-      );
-    } else {
-      createPost(
-        { ...data, authorId: "" },
-        {
-          onSuccess: () => {
-            router.push("/");
-          },
-        }
-      );
+      }
+
+      const postData = {
+        ...data,
+        cover: coverUrl,
+      };
+
+      if (initialData) {
+        updatePost(
+          { id: initialData.id, postData },
+          {
+            onSuccess: () => {
+              router.push("/");
+            },
+          }
+        );
+      } else {
+        createPost(
+          { ...postData, authorId: "" },
+          {
+            onSuccess: () => {
+              router.push("/");
+            },
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
     }
   };
 
-  // Handle image upload
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle image preview
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
+    setSelectedFile(file);
 
-    const data = await res.json();
-    if (data?.data?.secure_url) {
-      setImagePreview(data.data.secure_url);
-      form.setValue("cover", data.data.secure_url);
-    }
-    setUploading(false);
+    // Create blob URL for preview
+    const blobUrl = URL.createObjectURL(file);
+    setImagePreview(blobUrl);
   };
 
   return (
@@ -154,9 +165,9 @@ export function PostForm({ initialData }: PostFormProps) {
                         accept="image/*"
                         ref={fileInputRef}
                         onChange={handleImageChange}
-                        disabled={uploading}
+                        disabled={isUploading}
                       />
-                      {uploading && <div>Uploading...</div>}
+                      {isUploading && <div>Uploading...</div>}
                       {imagePreview && (
                         <img
                           src={imagePreview}
@@ -179,8 +190,11 @@ export function PostForm({ initialData }: PostFormProps) {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isCreating || isUpdating}>
-              {isCreating || isUpdating
+            <Button
+              type="submit"
+              disabled={isCreating || isUpdating || isUploading}
+            >
+              {isCreating || isUpdating || isUploading
                 ? initialData
                   ? "Updating..."
                   : "Creating..."
