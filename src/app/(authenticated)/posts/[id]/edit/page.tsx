@@ -3,17 +3,14 @@
 import { PostForm } from "@/components/blog/PostForm";
 import { useAuthStore } from "@/store/authStore";
 import { usePosts } from "@/services/postService";
-import { redirect } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 
-interface EditPostPageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default async function EditPostPage({ params }: EditPostPageProps) {
+export default function EditPostPage() {
   const { isAuthenticated, user } = useAuthStore();
   const { useGetPost } = usePosts();
-  const { id } = await params;
-  const { data: post, isLoading } = useGetPost(id);
+  const { id } = useParams();
+  console.log(id);
+  const { data: post, isLoading } = useGetPost(id as string);
 
   if (!isAuthenticated) {
     redirect("/login");
