@@ -1,15 +1,15 @@
 import axios from "axios";
 import setupInterceptors from "./axiosInterceptor";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const open = axios.create({
-  baseURL: "http://localhost:3000/api/",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
 
 const close = axios.create({
-  baseURL: "http://localhost:3000/api/",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
 setupInterceptors(close);
@@ -32,7 +32,7 @@ interface GetPostsResponse {
 }
 
 export const usePosts = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   const useGetPosts = ({
     page = 1,
     limit = 10,

@@ -5,12 +5,12 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 const open = axios.create({
-  baseURL: "http://localhost:3000/api/auth/",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
 
 const close = axios.create({
-  baseURL: "http://localhost:3000/api/auth/",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
 setupInterceptors(close);
@@ -21,7 +21,7 @@ export const useAuth = () => {
     return useMutation({
       mutationFn: async (data: { username: string; password: string }) => {
         try {
-          const response = await open.post("login/", data);
+          const response = await open.post("auth/login/", data);
           console.log("Response data:", response.data);
           return response.data;
         } catch (error: any) {
@@ -43,7 +43,7 @@ export const useAuth = () => {
     return useMutation({
       mutationFn: async (data: { username: string; password: string }) => {
         try {
-          const response = await open.post("register/", data);
+          const response = await open.post("auth/register/", data);
           console.log("Response data:", response.data);
           return response.data;
         } catch (error: any) {
@@ -65,7 +65,7 @@ export const useAuth = () => {
     return useMutation({
       mutationFn: async () => {
         try {
-          const response = await open.post("logout/");
+          const response = await open.post("auth/logout/");
           console.log("Response data:", response.data);
           return response.data;
         } catch (error: any) {
@@ -87,7 +87,7 @@ export const useAuth = () => {
       queryKey: ["user"],
       queryFn: async () => {
         try {
-          const response = await close.get("me/");
+          const response = await close.get("auth/me/");
           console.log("Response data:", response.data);
           return response.data;
         } catch (error: any) {
