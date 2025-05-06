@@ -11,15 +11,17 @@ export async function GET(req: Request) {
 
   const search = searchParams.get("search") || "";
   const sortBy = searchParams.get("sortBy") || "createdAt";
-  const sortOrder = searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
+  const sortOrder = (
+    searchParams.get("sortOrder") === "asc" ? "asc" : "desc"
+  ) as Prisma.SortOrder;
 
   const userId = searchParams.get("userId"); // optional — filters to user's posts
 
   const where: Prisma.PostWhereInput = {
     ...(search && {
       OR: [
-        { title: { contains: search, mode: "insensitive" } },
-        { content: { contains: search, mode: "insensitive" } },
+        { title: { contains: search, mode: Prisma.QueryMode.insensitive } },
+        { content: { contains: search, mode: Prisma.QueryMode.insensitive } },
       ],
     }),
     ...(userId && { authorId: userId }),
