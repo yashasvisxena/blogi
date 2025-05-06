@@ -24,6 +24,7 @@ interface Post {
   };
   createdAt: string;
   updatedAt: string;
+  cover: string | null;
 }
 
 interface GetPostsResponse {

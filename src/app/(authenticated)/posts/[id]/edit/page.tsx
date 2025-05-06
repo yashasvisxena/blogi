@@ -6,15 +6,14 @@ import { usePosts } from "@/services/postService";
 import { redirect } from "next/navigation";
 
 interface EditPostPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
-export default function EditPostPage({ params }: EditPostPageProps) {
+export default async function EditPostPage({ params }: EditPostPageProps) {
   const { isAuthenticated, user } = useAuthStore();
   const { useGetPost } = usePosts();
-  const { data: post, isLoading } = useGetPost(params.id);
+  const { id } = await params;
+  const { data: post, isLoading } = useGetPost(id);
 
   if (!isAuthenticated) {
     redirect("/login");
