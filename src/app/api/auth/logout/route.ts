@@ -1,4 +1,3 @@
-import { clearRefreshTokenCookie } from "@/lib/cookies";
 import { cookies } from "next/headers";
 
 export async function POST() {
