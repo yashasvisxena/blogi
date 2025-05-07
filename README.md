@@ -2,6 +2,8 @@
 
 Live Demo: [https://blogi-beta.vercel.app/](https://blogi-beta.vercel.app/)
 
+Docs : [docs](https://docs.google.com/document/d/1UjovmzLO3hEGw7VZEMJu2aG_-w4JrzOHuWhXVPuCif0/edit?usp=sharing)
+
 A modern blog application built with Next.js, featuring authentication, post creation, and image uploads.
 
 ## Features

@@ -1,27 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const allowed = ["/login", "/register", "/"];
+// Public routes that anyone can access
+const publicRoutes = ["/login", "/register", "/"];
+
+// Routes that require authentication
+const protectedRoutes = ["/create-post"];
 
 export default async function middleware(request: NextRequest) {
   const { nextUrl, cookies } = request;
-  const pathname = nextUrl.pathname;
+  const path = nextUrl.pathname;
 
   const refreshToken = cookies.get("refreshToken")?.value;
   const isAuthenticated = !!refreshToken;
 
-  // Check if the current path is a protected route
-  const isProtectedRoute =
-    !allowed.includes(pathname) &&
-    (pathname.startsWith("/posts/") || pathname === "/posts/create");
+  // Check if it's a post edit route
+  const isPostEditRoute = path.match(/^\/posts\/[\w-]+\/edit$/);
+
+  // Check if the current path requires authentication
+  const requiresAuth = protectedRoutes.includes(path) || isPostEditRoute;
 
   // Unauthenticated user accessing a protected route
-  if (!isAuthenticated && isProtectedRoute) {
-    console.log(`No valid token - Redirecting to /login from ${pathname}`);
+  if (!isAuthenticated && requiresAuth) {
+    console.log(`No valid token - Redirecting to /login from ${path}`);
     return NextResponse.redirect(new URL("/login", nextUrl.origin));
   }
 
   // Authenticated user trying to access login/signup routes
-  if (isAuthenticated && ["/login", "/register"].includes(pathname)) {
+  if (isAuthenticated && ["/login", "/register"].includes(path)) {
     console.log("Authenticated - Redirecting to /");
     return NextResponse.redirect(new URL("/", nextUrl.origin));
   }
@@ -30,5 +35,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/register", "/posts/:path*", "/"],
+  matcher: ["/posts/:path*", "/login", "/register", "/", "/create-post"],
 };
