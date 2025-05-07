@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const prisma = new PrismaClient();
@@ -58,4 +58,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-} 
+}
