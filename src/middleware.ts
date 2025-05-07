@@ -4,19 +4,24 @@ const allowed = ["/login", "/register", "/"];
 
 export default async function middleware(request: NextRequest) {
   const { nextUrl, cookies } = request;
+  const pathname = nextUrl.pathname;
 
   const refreshToken = cookies.get("refreshToken")?.value;
-
   const isAuthenticated = !!refreshToken;
 
+  // Check if the current path is a protected route
+  const isProtectedRoute =
+    !allowed.includes(pathname) &&
+    (pathname.startsWith("/posts/") || pathname === "/posts/create");
+
   // Unauthenticated user accessing a protected route
-  if (!isAuthenticated && !allowed.includes(nextUrl.pathname)) {
-    console.log("No valid token - Redirecting to /login");
+  if (!isAuthenticated && isProtectedRoute) {
+    console.log(`No valid token - Redirecting to /login from ${pathname}`);
     return NextResponse.redirect(new URL("/login", nextUrl.origin));
   }
 
   // Authenticated user trying to access login/signup routes
-  if (isAuthenticated && ["/login", "/register"].includes(nextUrl.pathname)) {
+  if (isAuthenticated && ["/login", "/register"].includes(pathname)) {
     console.log("Authenticated - Redirecting to /");
     return NextResponse.redirect(new URL("/", nextUrl.origin));
   }
@@ -25,5 +30,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/posts/:id/edit", "/login", "/register", "/"],
+  matcher: ["/login", "/register", "/posts/:path*", "/"],
 };

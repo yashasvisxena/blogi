@@ -6,13 +6,27 @@ import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Image from "next/image";
 
 export default function PostDetailPage() {
-  const { useGetPost } = usePosts();
+  const { useGetPost, useDeletePost } = usePosts();
   const { id } = useParams();
+  const router = useRouter();
   const { data: post, isLoading } = useGetPost(id as string);
   const { isAuthenticated, user } = useAuthStore();
+  const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      deletePost(id as string, {
+        onSuccess: () => {
+          router.push("/");
+        },
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -47,6 +61,17 @@ export default function PostDetailPage() {
             </div>
           </CardHeader>
           <CardContent>
+            {post.cover && (
+              <div className="mb-6 relative aspect-square size-24 w-full overflow-hidden rounded-lg">
+                <Image
+                  src={post.cover}
+                  alt={post.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            )}
             <div className="prose max-w-none">
               <p className="whitespace-pre-wrap">{post.content}</p>
             </div>
@@ -62,6 +87,13 @@ export default function PostDetailPage() {
               <Link href={`/posts/${post.id}/edit`}>
                 <Button>Edit Post</Button>
               </Link>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete Post"}
+              </Button>
             </div>
           )}
         </div>

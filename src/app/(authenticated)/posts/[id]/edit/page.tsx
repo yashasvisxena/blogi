@@ -9,7 +9,6 @@ export default function EditPostPage() {
   const { isAuthenticated, user } = useAuthStore();
   const { useGetPost } = usePosts();
   const { id } = useParams();
-  console.log(id);
   const { data: post, isLoading } = useGetPost(id as string);
 
   if (!isAuthenticated) {

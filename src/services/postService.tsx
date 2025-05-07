@@ -66,10 +66,8 @@ export const usePosts = () => {
           }
 
           const { data } = await open.get(`blogs?${params.toString()}`);
-          console.log("Response data:", data);
           return data;
         } catch (error: any) {
-          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },
@@ -82,10 +80,8 @@ export const usePosts = () => {
       queryFn: async () => {
         try {
           const { data } = await open.get(`blog/${id}`);
-          console.log("Response data:", data);
           return data;
         } catch (error: any) {
-          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },
@@ -97,10 +93,8 @@ export const usePosts = () => {
       mutationFn: async (id: string) => {
         try {
           const { data } = await close.delete(`blog/${id}`);
-          console.log("Response data:", data);
           return data;
         } catch (error: any) {
-          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },
@@ -125,10 +119,8 @@ export const usePosts = () => {
       }) => {
         try {
           const { data } = await close.put(`blog/${id}`, postData);
-          console.log("Response data:", data);
           return data;
         } catch (error: any) {
-          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },
@@ -151,10 +143,8 @@ export const usePosts = () => {
       }) => {
         try {
           const { data } = await close.post(`blog/`, postData);
-          console.log("Response data:", data);
           return data;
         } catch (error: any) {
-          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },
@@ -175,10 +165,8 @@ export const usePosts = () => {
           const formData = new FormData();
           formData.append("file", file);
           const { data } = await close.post(`upload/`, formData);
-          console.log("Response data:", data);
           return data;
         } catch (error: any) {
-          console.error("Error response data:", error.response?.data);
           throw error;
         }
       },

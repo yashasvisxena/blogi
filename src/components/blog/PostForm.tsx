@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card";
 import { postSchema, type PostFormData } from "@/lib/validations/auth";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface PostFormProps {
   initialData?: {
@@ -59,24 +60,24 @@ export function PostForm({ initialData }: PostFormProps) {
 
   const onSubmit = async (data: PostFormData) => {
     try {
-      let coverUrl = data.cover;
+      let coverUrl = null;
 
-      // Upload file if a new file is selected
       if (selectedFile) {
         const uploadResult = await uploadFile(selectedFile);
         if (uploadResult?.data?.secure_url) {
           coverUrl = uploadResult.data.secure_url;
+        } else {
+          throw new Error("Failed to upload image");
         }
+      } else if (imagePreview && !selectedFile) {
+        coverUrl = initialData?.cover || null;
       }
 
-      const postData = {
-        ...data,
-        cover: coverUrl,
-      };
-
+      data.cover = coverUrl;
+      console.log(data);
       if (initialData) {
         updatePost(
-          { id: initialData.id, postData },
+          { id: initialData.id, postData: data },
           {
             onSuccess: () => {
               router.push("/");
@@ -85,7 +86,7 @@ export function PostForm({ initialData }: PostFormProps) {
         );
       } else {
         createPost(
-          { ...postData, authorId: "" },
+          { ...data, authorId: "" },
           {
             onSuccess: () => {
               router.push("/");
@@ -95,6 +96,7 @@ export function PostForm({ initialData }: PostFormProps) {
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      toast.error("Failed to process image upload");
     }
   };
 
@@ -105,9 +107,22 @@ export function PostForm({ initialData }: PostFormProps) {
 
     setSelectedFile(file);
 
-    // Create blob URL for preview
     const blobUrl = URL.createObjectURL(file);
     setImagePreview(blobUrl);
+
+    form.setValue("cover", "pending-upload");
+  };
+
+  const handleRemoveCover = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    // Clear the preview and selected file
+    setImagePreview(null);
+    setSelectedFile(null);
+
+    form.setValue("cover", null);
   };
 
   return (
@@ -155,11 +170,11 @@ export function PostForm({ initialData }: PostFormProps) {
             <FormField
               control={form.control}
               name="cover"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cover Image</FormLabel>
-                  <FormControl>
-                    <>
+                  <div className="space-y-2">
+                    <FormControl>
                       <Input
                         type="file"
                         accept="image/*"
@@ -167,16 +182,35 @@ export function PostForm({ initialData }: PostFormProps) {
                         onChange={handleImageChange}
                         disabled={isUploading}
                       />
-                      {isUploading && <div>Uploading...</div>}
-                      {imagePreview && (
+                    </FormControl>
+
+                    {isUploading && (
+                      <div className="text-sm text-muted-foreground">
+                        Uploading...
+                      </div>
+                    )}
+
+                    {imagePreview && (
+                      <div className="mt-2 relative group">
                         <img
                           src={imagePreview}
                           alt="Preview"
-                          className="mt-2 max-h-48 rounded"
+                          className="max-h-48 rounded w-full object-cover"
                         />
-                      )}
-                    </>
-                  </FormControl>
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center">
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={handleRemoveCover}
+                            disabled={isUploading}
+                          >
+                            Remove Image
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
