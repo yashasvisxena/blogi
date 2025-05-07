@@ -6,6 +6,7 @@ import { verifyAccessToken } from "@/lib/auth";
 const postSchema = z.object({
   title: z.string().min(1),
   content: z.string().min(1),
+  cover: z.string().nullable(),
 });
 
 export async function GET(
@@ -68,10 +69,14 @@ export async function PUT(
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
   }
-
+  console.log(parsed.data);
   const updated = await prisma.post.update({
     where: { id: id },
-    data: parsed.data,
+    data: {
+      title: parsed.data.title,
+      content: parsed.data.content,
+      cover: parsed.data.cover,
+    },
   });
 
   return NextResponse.json(updated);

@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       data: {
         title: parsed.data.title,
         content: parsed.data.content,
-        cover: parsed.data.cover || "null",
+        cover: parsed.data.cover,
         author: {
           connect: {
             id: userId,
