@@ -74,7 +74,6 @@ export function PostForm({ initialData }: PostFormProps) {
       }
 
       data.cover = coverUrl;
-      console.log(data);
       if (initialData) {
         updatePost(
           { id: initialData.id, postData: data },
