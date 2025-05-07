@@ -41,6 +41,16 @@ export default function Home() {
     userId: showOnlyMyPosts ? user?.id : undefined,
   });
 
+  const sortedPosts = data?.posts ? [...data.posts] : [];
+  if (sortBy === "title") {
+    sortedPosts.sort((a, b) => {
+      const comparison = a.title
+        .toLowerCase()
+        .localeCompare(b.title.toLowerCase());
+      return sortOrder === "desc" ? -comparison : comparison;
+    });
+  }
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
@@ -101,9 +111,11 @@ export default function Home() {
         ) : (
           <div className="flex flex-col flex-grow flex-1 min-h-0">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 overflow-y-auto flex-grow">
-              {data?.posts.map((post: any) => (
-                <PostCard key={post.id} post={post} />
-              ))}
+              {(sortBy === "title" ? sortedPosts : data?.posts)?.map(
+                (post: any) => (
+                  <PostCard key={post.id} post={post} />
+                )
+              )}
             </div>
 
             {data?.posts && data.posts.length > 0 && (
