@@ -69,7 +69,6 @@ export async function PUT(
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
   }
-  console.log(parsed.data);
   const updated = await prisma.post.update({
     where: { id: id },
     data: {

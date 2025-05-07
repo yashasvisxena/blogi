@@ -47,7 +47,7 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <Card className="w-full h-[420px] pt-0 flex flex-col shadow-lg">
-      {post.cover && post.cover === "null" ? (
+      {!post.cover ? (
         <div className="h-40 w-full flex items-center justify-center bg-gray-200 rounded-t-md text-gray-500 text-3xl font-bold">
           No Image
         </div>
