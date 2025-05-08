@@ -134,7 +134,7 @@ export function PostForm({ initialData }: PostFormProps) {
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 max-h-[60vh] overflow-y-auto">
             <FormField
               control={form.control}
               name="title"
@@ -215,7 +215,7 @@ export function PostForm({ initialData }: PostFormProps) {
               )}
             />
           </CardContent>
-          <CardFooter className="flex justify-between">
+          <CardFooter className="flex justify-between border-t">
             <Button
               type="button"
               variant="outline"
