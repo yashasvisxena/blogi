@@ -1,15 +1,11 @@
-'use client'
+"use client";
 
-import { LoginForm } from '@/components/auth/LoginForm'
+import { LoginForm } from "@/components/auth/LoginForm";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen">
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex justify-center">
-          <LoginForm />
-        </div>
-      </main>
+    <div className="size-full flex items-center justify-center">
+      <LoginForm />
     </div>
-  )
-} 
+  );
+}

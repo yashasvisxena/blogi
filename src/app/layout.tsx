@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className + "min-h-screen"}>
+      <body className={`${inter.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -27,9 +27,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
-            <Navbar />
-            {children}
-            <Toaster richColors expand />
+            <div className="flex flex-col w-screen h-screen">
+              <Navbar />
+              <main className="size-full flex-1">{children}</main>
+              <Toaster richColors expand />
+            </div>
           </Providers>
         </ThemeProvider>
       </body>
