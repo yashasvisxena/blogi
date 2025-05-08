@@ -35,7 +35,7 @@ export function Navbar() {
                   <Button variant="outline">Create Post</Button>
                 </Link>
                 <span className="text-sm">Welcome, {user?.username}</span>
-                <Button variant="ghost" onClick={handleLogout}>
+                <Button variant="destructive" onClick={handleLogout}>
                   Logout
                 </Button>
               </>
