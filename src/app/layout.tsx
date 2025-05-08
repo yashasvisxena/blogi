@@ -27,9 +27,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
-            <div className="flex flex-col w-screen h-screen">
+            <div className="flex flex-col w-full h-screen">
               <Navbar />
-              <main className="size-full flex-1">{children}</main>
+              <main className="flex-1">{children}</main>
               <Toaster richColors expand />
             </div>
           </Providers>
