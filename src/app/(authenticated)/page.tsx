@@ -71,16 +71,19 @@ export default function Home() {
             className="max-w-md"
           />
           <Button type="submit">Search</Button>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Sort By" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="createdAt">Created At</SelectItem>
-              <SelectItem value="title">Title</SelectItem>
-              <SelectItem value="author.username">Author</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <span>Sort By:</span>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Sort By" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="createdAt">Created At</SelectItem>
+                <SelectItem value="title">Title</SelectItem>
+                <SelectItem value="author.username">Author</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="flex items-center gap-2">
             <span>Asc</span>
             <Switch
